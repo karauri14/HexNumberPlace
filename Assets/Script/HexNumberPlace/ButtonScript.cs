@@ -19,11 +19,16 @@ public class ButtonScript : MonoBehaviour {
 		GameObject obj = GameObject.Find(name).gameObject;
 		Text t = obj.GetComponent<Text>();
 		string x = transform.gameObject.name.Replace("Button", "");
+		int selx, sely;
+		selx = int.Parse(SelectScript.selectx, System.Globalization.NumberStyles.HexNumber);
+		sely = int.Parse(SelectScript.selecty, System.Globalization.NumberStyles.HexNumber);;
+
 		if (t.text == x) {
-			t.text = "";
+			MakeProblem.table [sely, selx] = "";
 			obj.tag = "Finish";
-		} else {
-			t.text = x;
+		} else if (t.text.Length <= 1){
+			MakeProblem.table [sely, selx] = x;
+			SelectScript.selectnum = x;
 			obj.tag = "filled";
 		}
 	}
