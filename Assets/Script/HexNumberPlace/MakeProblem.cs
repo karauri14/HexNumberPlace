@@ -68,7 +68,7 @@ public class MakeProblem : MonoBehaviour {
 		//ここまで
 
 		//空白作成
-		for (int i = 0; i < 255; i++) {
+		for (int i = 0; i < DifficultySelect.diff; i++) {
 			string tmp;
 			//ランダムに選んで空白にする
 			int n1 = Random.Range (0, 16);
