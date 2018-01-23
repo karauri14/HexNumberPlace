@@ -10,6 +10,7 @@ public class MakeProblem : MonoBehaviour {
 
 	private string[,] ans1;
 	private string[,] ans2;
+
 	// Use this for initialization
 	void Start () {
 		ans1 = new string[16, 16];
@@ -17,7 +18,6 @@ public class MakeProblem : MonoBehaviour {
 		hint = new bool[16, 16];
 		table = new string[16, 16];
 		int count = 0;
-
 		//問題用配列作成ここから
 		int n = 0;
 		for (int i = 0; i < 16; i++) {
@@ -78,12 +78,15 @@ public class MakeProblem : MonoBehaviour {
 		while (count < DifficultySelect.diff) {
 			string tmp;
 			bool flag;
+
+
 			//ランダムに選んで空白にする
 			int n1 = Random.Range (0, 16);
 			int n2 = Random.Range (0, 16);
 			if (table [n1, n2] == "") {
 				continue;
 			}
+
 			tmp = string.Copy(table [n1, n2]);
 			table [n1, n2] = "";
 			hint [n1, n2] = false;
@@ -97,8 +100,6 @@ public class MakeProblem : MonoBehaviour {
 				count++;
 			}
 		}
-		Debug.Log ("1:" + ans1 [0, 0] + ans1 [0, 1] + ans1 [0, 2] + ans1 [0, 3]);
-		Debug.Log ("2:" + ans2 [0, 0] + ans2 [0, 1] + ans2 [0, 2] + ans2 [0, 3]);
 	}
 	
 	// Update is called once per frame
@@ -211,6 +212,7 @@ public class MakeProblem : MonoBehaviour {
 			System.Array.Copy (board, ans1, 256);
 			return ;
 		}
+
 		for (int n =  0; n < 16; n++){
 			if (CanInput(board, emptyPosx, emptyPosy, n.ToString("X"))){
 				board[emptyPosy, emptyPosx] = n.ToString("X");
@@ -226,6 +228,7 @@ public class MakeProblem : MonoBehaviour {
 		int emptyPosy = pos / 16;
 		int emptyPosx = pos % 16;
 		int oldpos = pos;
+			
 		for (int y = emptyPosy; y < 16; y++) {
 			for (int x = emptyPosx; x < 16; x++) {
 				if (System.String.IsNullOrEmpty(board [y, x])) {
@@ -254,20 +257,27 @@ public class MakeProblem : MonoBehaviour {
 	}
 
 	bool CanInput(string[,] board, int posx, int posy, string inputNum){
+		List<string> numlist1 = new List<string>();
+		List<string> numlist2 = new List<string>();
+		List<string> numlist3 = new List<string>();
+		//List<string> numlist = new List<string> ();
+
 		for (int i = 0; i < 16; i++) {
-			if (board [posy, i] == inputNum)
-				return false;
-			if (board [i, posx] == inputNum)
-				return false;
+			numlist1.Add(board [posy, i]);
+			numlist2.Add(board [i, posx]);
 		}
 		int topLeftx = posx / 4 * 4;
 		int topLefty = posy / 4 * 4;
 
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (board [topLefty + i, topLeftx + j] == inputNum)
-					return false;
+				numlist3.Add (board [topLefty + i, topLeftx + j]);
 			}
+		}
+		var numlist = numlist1.Union<string> (numlist2.Union<string> (numlist3)).Distinct<string>();
+
+		if (numlist.Contains (inputNum)) {
+			return false;
 		}
 		return true;
 	}
