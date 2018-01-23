@@ -22,7 +22,7 @@ public class StartButton : MonoBehaviour {
 		} else if (difficulty.Equals ("NORMAL")) {
 			DifficultySelect.diff = 150;
 		} else if (difficulty.Equals ("HARD")) {
-			DifficultySelect.diff = 255;
+			DifficultySelect.diff = 200;
 		}
 		SceneManager.LoadScene("HexNumberPlace");
 	}

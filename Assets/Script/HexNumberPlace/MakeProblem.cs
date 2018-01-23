@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,10 +8,15 @@ public class MakeProblem : MonoBehaviour {
 	public static string[,] table;
 	public bool[,] hint;
 
+	private string[,] ans1;
+	private string[,] ans2;
 	// Use this for initialization
 	void Start () {
+		ans1 = new string[16, 16];
+		ans2 = new string[16, 16];
 		hint = new bool[16, 16];
 		table = new string[16, 16];
+		int count = 0;
 
 		//問題用配列作成ここから
 		int n = 0;
@@ -68,21 +74,31 @@ public class MakeProblem : MonoBehaviour {
 		//ここまで
 
 		//空白作成
-		for (int i = 0; i < DifficultySelect.diff; i++) {
+
+		while (count < DifficultySelect.diff) {
 			string tmp;
+			bool flag;
 			//ランダムに選んで空白にする
 			int n1 = Random.Range (0, 16);
 			int n2 = Random.Range (0, 16);
-			tmp = table [n1, n2];
+			if (table [n1, n2] == "") {
+				continue;
+			}
+			tmp = string.Copy(table [n1, n2]);
 			table [n1, n2] = "";
 			hint [n1, n2] = false;
 
+			flag = solver (table);
 			//解が複数個でたなら元に戻す
-			if (!solver (table)) {
-				table [n1, n2] = tmp;
+			if (flag != true) {
+				table [n1, n2] = string.Copy (tmp);
 				hint [n1, n2] = true;
+			} else {
+				count++;
 			}
 		}
+		Debug.Log ("1:" + ans1 [0, 0] + ans1 [0, 1] + ans1 [0, 2] + ans1 [0, 3]);
+		Debug.Log ("2:" + ans2 [0, 0] + ans2 [0, 1] + ans2 [0, 2] + ans2 [0, 3]);
 	}
 	
 	// Update is called once per frame
@@ -153,14 +169,19 @@ public class MakeProblem : MonoBehaviour {
 
 		System.Array.Copy (sol, sol1, 256);
 		System.Array.Copy (sol, sol2, 256);
+
 		//前から解く
+
 		BruteForce(sol1, 0);
 		//後ろから解く
 		BruteForce2(sol2, 0);
-		//一致したらtrue
+		//間違いがあるとfalse
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
-				if (sol1 [i, j] != sol2 [i, j]) {
+				if (ans1 [i, j] != ans2 [i, j]) {
+					return false;
+				}
+				if (string.IsNullOrEmpty(ans1[i, j])){
 					return false;
 				}
 			}
@@ -171,22 +192,25 @@ public class MakeProblem : MonoBehaviour {
 	void BruteForce(string[,] board, int pos){
 		int emptyPosy = pos / 16;
 		int emptyPosx = pos % 16;
+		int oldpos = pos;
 
 		for (int y = emptyPosy; y < 16; y++) {
 			for (int x = emptyPosx; x < 16; x++) {
-				if (board [y, x] == "") {
+				if (System.String.IsNullOrEmpty(board [y, x])) {
 					pos = y * 16 + x;
 					emptyPosx = x;
 					emptyPosy = y;
 					break;
 				}
 			}
+			if (pos != oldpos) {
+				break;
+			}
 		}
-
 		if (emptyPosy == 16) {
-			return;
+			System.Array.Copy (board, ans1, 256);
+			return ;
 		}
-
 		for (int n =  0; n < 16; n++){
 			if (CanInput(board, emptyPosx, emptyPosy, n.ToString("X"))){
 				board[emptyPosy, emptyPosx] = n.ToString("X");
@@ -194,25 +218,32 @@ public class MakeProblem : MonoBehaviour {
 				board[emptyPosy, emptyPosx] = "";
 			}
 		}
+
+
 	}
 
 	void BruteForce2(string[,] board, int pos){
 		int emptyPosy = pos / 16;
 		int emptyPosx = pos % 16;
-
+		int oldpos = pos;
 		for (int y = emptyPosy; y < 16; y++) {
 			for (int x = emptyPosx; x < 16; x++) {
-				if (board [y, x] == "") {
+				if (System.String.IsNullOrEmpty(board [y, x])) {
 					pos = y * 16 + x;
 					emptyPosx = x;
 					emptyPosy = y;
 					break;
 				}
 			}
+			if (pos != oldpos) {
+				break;
+			}
 		}
 		if (emptyPosy == 16) {
-			return;
+			System.Array.Copy(board, ans2, 256);
+			return ;
 		}
+
 		for (int n =  15; n >= 0; n--){
 			if (CanInput(board, emptyPosx, emptyPosy, n.ToString("X"))){
 				board[emptyPosy, emptyPosx] = n.ToString("X");
@@ -223,18 +254,11 @@ public class MakeProblem : MonoBehaviour {
 	}
 
 	bool CanInput(string[,] board, int posx, int posy, string inputNum){
-		try {
-			for (int i = 0; i < 16; i++) {
-				if (board [posy, i] == inputNum)
-					return false;
-				if (board [i, posx] == inputNum)
-					return false;
-			}
-		}
-		catch (System.Exception e){
-			if (e is System.IndexOutOfRangeException) {
-				Debug.Log (posy);
-			}
+		for (int i = 0; i < 16; i++) {
+			if (board [posy, i] == inputNum)
+				return false;
+			if (board [i, posx] == inputNum)
+				return false;
 		}
 		int topLeftx = posx / 4 * 4;
 		int topLefty = posy / 4 * 4;
