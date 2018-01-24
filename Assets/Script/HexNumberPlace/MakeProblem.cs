@@ -17,7 +17,7 @@ public class MakeProblem : MonoBehaviour {
 		ans2 = new string[16, 16];
 		hint = new bool[16, 16];
 		table = new string[16, 16];
-		int count = 0;
+		int count = new int();
 		//問題用配列作成ここから
 		int n = 0;
 		for (int i = 0; i < 16; i++) {
@@ -75,7 +75,9 @@ public class MakeProblem : MonoBehaviour {
 
 		//空白作成
 
+		count = 0;
 		while (count < DifficultySelect.diff) {
+			int limit = 0;
 			string tmp;
 			bool flag;
 
@@ -83,6 +85,9 @@ public class MakeProblem : MonoBehaviour {
 			//ランダムに選んで空白にする
 			int n1 = Random.Range (0, 16);
 			int n2 = Random.Range (0, 16);
+			if (++limit == 600) {
+				break;
+			}
 			if (table [n1, n2] == "") {
 				continue;
 			}
@@ -99,6 +104,7 @@ public class MakeProblem : MonoBehaviour {
 			} else {
 				count++;
 			}
+
 		}
 	}
 	
@@ -190,77 +196,78 @@ public class MakeProblem : MonoBehaviour {
 		return true;
 	}
 
-	void BruteForce(string[,] board, int pos){
-		int emptyPosy = pos / 16;
-		int emptyPosx = pos % 16;
-		int oldpos = pos;
+	bool BruteForce(string[,] board, int pos){
+		bool flag;
 
-		for (int y = emptyPosy; y < 16; y++) {
-			for (int x = emptyPosx; x < 16; x++) {
-				if (System.String.IsNullOrEmpty(board [y, x])) {
-					pos = y * 16 + x;
-					emptyPosx = x;
-					emptyPosy = y;
-					break;
-				}
+		for (int n = pos; n < 256; n++) {
+			if (System.String.IsNullOrEmpty (board [n / 16, n % 16])) {
+				//board [n / 16, n % 16] = CanInputOne (board, n % 16, n / 16);
 			}
-			if (pos != oldpos) {
+		}
+
+		for (int n = pos; n < 256; n++) {
+			if (System.String.IsNullOrEmpty (board [n / 16, n % 16])) {
+				pos = n;
 				break;
 			}
 		}
-		if (emptyPosy == 16) {
+		if (pos == 256) {
 			System.Array.Copy (board, ans1, 256);
-			return ;
+			return true;
 		}
 
 		for (int n =  0; n < 16; n++){
-			if (CanInput(board, emptyPosx, emptyPosy, n.ToString("X"))){
-				board[emptyPosy, emptyPosx] = n.ToString("X");
-				BruteForce(board, pos + 1);
-				board[emptyPosy, emptyPosx] = "";
+			if (CanInput(board, pos / 16, pos % 16, n.ToString("X"))){
+				board[pos / 16, pos % 16] = n.ToString("X");
+				flag = BruteForce(board, pos + 1);
+				if (flag) {
+					break;
+				}
+				board[pos / 16, pos % 16] = "";
 			}
 		}
 
-
+		return false;
 	}
 
-	void BruteForce2(string[,] board, int pos){
-		int emptyPosy = pos / 16;
-		int emptyPosx = pos % 16;
-		int oldpos = pos;
-			
-		for (int y = emptyPosy; y < 16; y++) {
-			for (int x = emptyPosx; x < 16; x++) {
-				if (System.String.IsNullOrEmpty(board [y, x])) {
-					pos = y * 16 + x;
-					emptyPosx = x;
-					emptyPosy = y;
-					break;
-				}
+	bool BruteForce2(string[,] board, int pos){
+		bool flag;
+
+		for (int n = pos; n < 256; n++) {
+			if (System.String.IsNullOrEmpty (board [n / 16, n % 16])) {
+				//board [n / 16, n % 16] = CanInputOne (board, n % 16, n / 16);
 			}
-			if (pos != oldpos) {
+		}
+
+		for (int n = pos; n < 256; n++) {
+			if (System.String.IsNullOrEmpty (board [n / 16, n % 16])) {
+				pos = n;
 				break;
 			}
 		}
-		if (emptyPosy == 16) {
-			System.Array.Copy(board, ans2, 256);
-			return ;
+		if (pos == 256) {
+			System.Array.Copy (board, ans2, 256);
+			return true;
 		}
 
 		for (int n =  15; n >= 0; n--){
-			if (CanInput(board, emptyPosx, emptyPosy, n.ToString("X"))){
-				board[emptyPosy, emptyPosx] = n.ToString("X");
-				BruteForce2(board, pos + 1);
-				board[emptyPosy, emptyPosx] = "";
+			if (CanInput(board, pos / 16, pos % 16, n.ToString("X"))){
+				board[pos / 16, pos % 16] = n.ToString("X");
+				flag = BruteForce2(board, pos + 1);
+				if (flag) {
+					break;
+				}
+				board[pos / 16, pos % 16] = "";
 			}
 		}
+
+		return false;
 	}
 
 	bool CanInput(string[,] board, int posx, int posy, string inputNum){
 		List<string> numlist1 = new List<string>();
 		List<string> numlist2 = new List<string>();
 		List<string> numlist3 = new List<string>();
-		//List<string> numlist = new List<string> ();
 
 		for (int i = 0; i < 16; i++) {
 			numlist1.Add(board [posy, i]);
@@ -274,6 +281,7 @@ public class MakeProblem : MonoBehaviour {
 				numlist3.Add (board [topLefty + i, topLeftx + j]);
 			}
 		}
+		//入れられない数字の和集合
 		var numlist = numlist1.Union<string> (numlist2.Union<string> (numlist3)).Distinct<string>();
 
 		if (numlist.Contains (inputNum)) {
@@ -281,4 +289,52 @@ public class MakeProblem : MonoBehaviour {
 		}
 		return true;
 	}
+
+//	string CanInputOne(string[,] board, int posx, int posy){
+//		List<string> numlist1 = new List<string>();
+//		List<string> numlist2 = new List<string>();
+//		List<string> numlist3 = new List<string>();
+//		List<string> orig = new List<string> {
+//			"0",
+//			"1",
+//			"2",
+//			"3",
+//			"4",
+//			"5",
+//			"6",
+//			"7",
+//			"8",
+//			"9",
+//			"A",
+//			"B",
+//			"C",
+//			"D",
+//			"E",
+//			"F"
+//		}; 
+//		for (int i = 0; i < 16; i++) {
+//			numlist1.Add(board [posy, i]);
+//			numlist2.Add(board [i, posx]);
+//		}
+//		if (orig.Except<string>(numlist1).Count() == 1) {
+//			return orig.Except<string>(numlist1).First ().ToString ();
+//		}
+//		if (orig.Except<string>(numlist2).Count() == 1) {
+//			return orig.Except<string>(numlist2).First ().ToString ();
+//		}
+//
+//		int topLeftx = posx / 4 * 4;
+//		int topLefty = posy / 4 * 4;
+//
+//		for (int i = 0; i < 4; i++) {
+//			for (int j = 0; j < 4; j++) {
+//				numlist3.Add (board [topLefty + i, topLeftx + j]);
+//			}
+//		}
+//		if (orig.Except<string>(numlist3).Count() == 1) {
+//			return orig.Except<string>(numlist3).First ().ToString();
+//		}
+//
+//		return "";
+//	}
 }

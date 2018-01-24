@@ -25,7 +25,7 @@ public class StartButton : MonoBehaviour {
 		} else if (difficulty.Equals ("NORMAL")) {
 			DifficultySelect.diff = 80;
 		} else if (difficulty.Equals ("HARD")) {
-			DifficultySelect.diff = 90;
+			DifficultySelect.diff = 100;
 		}
 		loadingUI.SetActive (true);
 		SceneManager.LoadScene ("HexNumberPlace");
