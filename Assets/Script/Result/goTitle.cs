@@ -16,6 +16,6 @@ public class goTitle : MonoBehaviour {
 	}
 
 	public void OnClick(){
-		SceneManager.LoadScene ("Title");
+		SceneManager.LoadScene ("Scene/Title");
 	}
 }

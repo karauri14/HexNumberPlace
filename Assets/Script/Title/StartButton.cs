@@ -28,7 +28,7 @@ public class StartButton : MonoBehaviour {
 			DifficultySelect.diff = 100;
 		}
 		loadingUI.SetActive (true);
-		SceneManager.LoadScene ("HexNumberPlace");
+		SceneManager.LoadScene ("Scene/HexNumberPlace");
 	}
 
 }

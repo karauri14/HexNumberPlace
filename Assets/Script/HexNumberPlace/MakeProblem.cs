@@ -38,7 +38,7 @@ public class MakeProblem : MonoBehaviour {
 		swap_tate (7, 13);
 		swap_tate (11, 14);
 
-		for (int i = 0; i < 150; i++) {
+		for (int i = 0; i < 300; i++) {
 			int l;
 			swap_grid_tate (Random.Range(0, 16), Random.Range(0, 16));
 			swap_grid_yoko (Random.Range(0, 16), Random.Range(0, 16));
@@ -74,7 +74,6 @@ public class MakeProblem : MonoBehaviour {
 		//ここまで
 
 		//空白作成
-
 		count = 0;
 		while (count < DifficultySelect.diff) {
 			int limit = 0;
@@ -178,10 +177,9 @@ public class MakeProblem : MonoBehaviour {
 		System.Array.Copy (sol, sol2, 256);
 
 		//前から解く
-
-		BruteForce(sol1, 0);
+		BruteForce(sol1, 0, 1);
 		//後ろから解く
-		BruteForce2(sol2, 0);
+		BruteForce(sol2, 0, -1);
 		//間違いがあるとfalse
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
@@ -196,14 +194,9 @@ public class MakeProblem : MonoBehaviour {
 		return true;
 	}
 
-	bool BruteForce(string[,] board, int pos){
+	bool BruteForce(string[,] board, int pos, int direction){
 		bool flag;
-
-		for (int n = pos; n < 256; n++) {
-			if (System.String.IsNullOrEmpty (board [n / 16, n % 16])) {
-				//board [n / 16, n % 16] = CanInputOne (board, n % 16, n / 16);
-			}
-		}
+		int num;
 
 		for (int n = pos; n < 256; n++) {
 			if (System.String.IsNullOrEmpty (board [n / 16, n % 16])) {
@@ -212,53 +205,29 @@ public class MakeProblem : MonoBehaviour {
 			}
 		}
 		if (pos == 256) {
-			System.Array.Copy (board, ans1, 256);
+			if (direction == 1) {
+				System.Array.Copy (board, ans1, 256);
+			} else {
+				System.Array.Copy (board, ans2, 256);
+			}
 			return true;
 		}
-
-		for (int n =  0; n < 16; n++){
-			if (CanInput(board, pos / 16, pos % 16, n.ToString("X"))){
-				board[pos / 16, pos % 16] = n.ToString("X");
-				flag = BruteForce(board, pos + 1);
+		if (direction == 1) {
+			num = 0;
+		}
+		else {
+			num = 15;
+		}
+		while(num != 16 && num != -1){
+			if (CanInput(board, pos / 16, pos % 16, num.ToString("X"))){
+				board[pos / 16, pos % 16] = num.ToString("X");
+				flag = BruteForce(board, pos + 1, direction);
 				if (flag) {
 					break;
 				}
 				board[pos / 16, pos % 16] = "";
 			}
-		}
-
-		return false;
-	}
-
-	bool BruteForce2(string[,] board, int pos){
-		bool flag;
-
-		for (int n = pos; n < 256; n++) {
-			if (System.String.IsNullOrEmpty (board [n / 16, n % 16])) {
-				//board [n / 16, n % 16] = CanInputOne (board, n % 16, n / 16);
-			}
-		}
-
-		for (int n = pos; n < 256; n++) {
-			if (System.String.IsNullOrEmpty (board [n / 16, n % 16])) {
-				pos = n;
-				break;
-			}
-		}
-		if (pos == 256) {
-			System.Array.Copy (board, ans2, 256);
-			return true;
-		}
-
-		for (int n =  15; n >= 0; n--){
-			if (CanInput(board, pos / 16, pos % 16, n.ToString("X"))){
-				board[pos / 16, pos % 16] = n.ToString("X");
-				flag = BruteForce2(board, pos + 1);
-				if (flag) {
-					break;
-				}
-				board[pos / 16, pos % 16] = "";
-			}
+			num += direction;
 		}
 
 		return false;
@@ -289,52 +258,4 @@ public class MakeProblem : MonoBehaviour {
 		}
 		return true;
 	}
-
-//	string CanInputOne(string[,] board, int posx, int posy){
-//		List<string> numlist1 = new List<string>();
-//		List<string> numlist2 = new List<string>();
-//		List<string> numlist3 = new List<string>();
-//		List<string> orig = new List<string> {
-//			"0",
-//			"1",
-//			"2",
-//			"3",
-//			"4",
-//			"5",
-//			"6",
-//			"7",
-//			"8",
-//			"9",
-//			"A",
-//			"B",
-//			"C",
-//			"D",
-//			"E",
-//			"F"
-//		}; 
-//		for (int i = 0; i < 16; i++) {
-//			numlist1.Add(board [posy, i]);
-//			numlist2.Add(board [i, posx]);
-//		}
-//		if (orig.Except<string>(numlist1).Count() == 1) {
-//			return orig.Except<string>(numlist1).First ().ToString ();
-//		}
-//		if (orig.Except<string>(numlist2).Count() == 1) {
-//			return orig.Except<string>(numlist2).First ().ToString ();
-//		}
-//
-//		int topLeftx = posx / 4 * 4;
-//		int topLefty = posy / 4 * 4;
-//
-//		for (int i = 0; i < 4; i++) {
-//			for (int j = 0; j < 4; j++) {
-//				numlist3.Add (board [topLefty + i, topLeftx + j]);
-//			}
-//		}
-//		if (orig.Except<string>(numlist3).Count() == 1) {
-//			return orig.Except<string>(numlist3).First ().ToString();
-//		}
-//
-//		return "";
-//	}
 }

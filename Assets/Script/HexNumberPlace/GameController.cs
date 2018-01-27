@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour {
 			flag = num_check ();
 			if (flag) {
 				data.result_time = component.getTime ();
-				SceneManager.LoadScene ("Result");
+				SceneManager.LoadScene ("Scene/Result");
 			}
 		}
 	}
