@@ -1,5 +1,5 @@
 # HexNumberPlace
-Ver 1.1
+Ver 1.2
 --
 はすみ君誕生日おめでとう
 
