@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class StartButton : MonoBehaviour {
 
-	public GameObject loadingUI;
-
 	// Use this for initialization
 	void Start () {
 		
@@ -25,10 +23,9 @@ public class StartButton : MonoBehaviour {
 		} else if (difficulty.Equals ("NORMAL")) {
 			DifficultySelect.diff = 80;
 		} else if (difficulty.Equals ("HARD")) {
-			DifficultySelect.diff = 100;
+			DifficultySelect.diff = 150;
 		}
-		loadingUI.SetActive (true);
-		SceneManager.LoadScene ("Scene/HexNumberPlace");
+		SceneManager.LoadScene ("Scene/Making");
 	}
 
 }

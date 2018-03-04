@@ -9,9 +9,4 @@ public class DispResult : MonoBehaviour {
 	void Start () {
 		this.GetComponent<Text> ().text = data.result_time;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

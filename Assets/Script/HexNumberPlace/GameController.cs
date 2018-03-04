@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 	private int emptycount;
@@ -43,7 +44,7 @@ public class GameController : MonoBehaviour {
 		for (int i = 0; i < 16; i++) {
 			int count = 0;
 			for (int j = 0; j < 16; j++) {
-				count += int.Parse(MakeProblem.table [j, i], System.Globalization.NumberStyles.HexNumber);
+				count += int.Parse(mapdata.table [j * Constants.N + i].num, System.Globalization.NumberStyles.HexNumber);
 			}
 			if (count != 120) {
 				return false;
@@ -56,7 +57,7 @@ public class GameController : MonoBehaviour {
 		for (int i = 0; i < 16; i++) {
 			int count = 0;
 			for (int j = 0; j < 16; j++) {
-				count += int.Parse (MakeProblem.table [i, j], System.Globalization.NumberStyles.HexNumber);
+				count += int.Parse (mapdata.table [i * Constants.N + j].num, System.Globalization.NumberStyles.HexNumber);
 			}
 			if (count != 120) {
 				return false;
@@ -67,13 +68,13 @@ public class GameController : MonoBehaviour {
 	}
 	bool grid(){
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				int count = 0;
 
 				for (int a = i * 4; a < i * 4 + 4; a++) {
 					for (int b = j * 4; b < j * 4 + 4; b++) {
-						count += int.Parse (MakeProblem.table [a, b], System.Globalization.NumberStyles.HexNumber);
+						count += int.Parse (mapdata.table [a * Constants.N + b].num, System.Globalization.NumberStyles.HexNumber);
 					}
 				}
 				if (count != 120) {

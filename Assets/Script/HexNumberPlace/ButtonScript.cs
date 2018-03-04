@@ -24,10 +24,10 @@ public class ButtonScript : MonoBehaviour {
 		sely = int.Parse(SelectScript.selecty, System.Globalization.NumberStyles.HexNumber);;
 
 		if (t.text == x) {
-			MakeProblem.table [sely, selx] = "";
+			mapdata.table [sely * Constants.N + selx].num = "";
 			obj.tag = "Finish";
 		} else if (t.text.Length <= 1){
-			MakeProblem.table [sely, selx] = x;
+			mapdata.table [sely * Constants.N + selx].num = x;
 			SelectScript.selectnum = x;
 			obj.tag = "filled";
 		}
