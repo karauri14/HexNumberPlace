@@ -19,11 +19,11 @@ public class StartButton : MonoBehaviour {
 	public void OnClick(){
 		string difficulty = this.gameObject.name;
 		if (difficulty.Equals ("EASY")) {
-			DifficultySelect.diff = 50;
+			DifficultySelect.diff = 40;
 		} else if (difficulty.Equals ("NORMAL")) {
 			DifficultySelect.diff = 80;
 		} else if (difficulty.Equals ("HARD")) {
-			DifficultySelect.diff = 150;
+			DifficultySelect.diff = 124;
 		}
 		SceneManager.LoadScene ("Scene/Making");
 	}

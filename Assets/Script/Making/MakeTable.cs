@@ -42,6 +42,21 @@ public class MakingClass {
 		List<string> numlist = numlist1.Union<string> (numlist2.Union<string> (numlist3)).Distinct<string>().ToList();
 		this.canInput = this.canInput.Except<string>(numlist).ToList();
 	}
+
+	public void UpdateCanInput(MakingClass[] board, int posx, int posy, string num){
+		for (int i = 0; i < Constants.N; i++) {
+			board [posy * Constants.N + i].canInput.Remove (num);
+			board [i * Constants.N + posx].canInput.Remove (num);
+		}
+		int topLeftx = posx / 4 * 4;
+		int topLefty = posy / 4 * 4;
+
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				board [(topLefty + i) * Constants.N + topLeftx + j].canInput.Remove (num);
+			}
+		}
+	}
 }
 
 public class MakeTable : MonoBehaviour {
@@ -54,27 +69,8 @@ public class MakeTable : MonoBehaviour {
 	public Slider slide;
 
 	void Start(){
-		for (int i = 0; i < Constants.NN; i++) mapdata.table[i] = new MakingClass();
+		InitMap ();
 
-		int n = 0;
-		for (int i = 0; i < Constants.N; i++) {
-			for (int j = 0; j < Constants.N; j++) {
-				mapdata.table[i * Constants.N + j].num = (n + i).ToString ("X");
-				n++;
-				if (n + i > Constants.N - 1) {
-					n = -i;
-				}
-			}
-		}
-
-		swap_tate (1, 4);
-		swap_tate (2, 8);
-		swap_tate (3, 12);
-		swap_tate (6, 9);
-		swap_tate (7, 13);
-		swap_tate (11, 14);
-
-		Shuffle(1);
 	}
 
 	void Update() {
@@ -95,7 +91,7 @@ public class MakeTable : MonoBehaviour {
 				tmp = mapdata.table [n].num;
 				mapdata.table [n].num = "";
 				mapdata.table [n].hint = false;
-				MakeEmpty (mapdata.table, tmp, n);
+				MakeEmpty (mapdata.table, n);
 				flag = solver (mapdata.table);
 				//解が複数個でたなら元に戻す
 				if (flag != true) {
@@ -113,7 +109,7 @@ public class MakeTable : MonoBehaviour {
 	}
 
 	//空白作成時リスト更新用
-	void MakeEmpty(MakingClass[] board, string n, int pos){
+	void MakeEmpty(MakingClass[] board, int pos){
 		int y = pos / Constants.N;
 		int x = pos % Constants.N;
 
@@ -156,6 +152,9 @@ public class MakeTable : MonoBehaviour {
 		//間違いがあるとfalse
 		for (int i = 0; i < Constants.NN; i++) {
 			if (ans1 [i] != ans2 [i]) {
+				return false;
+			}
+			if (ans1 [i] == "") {
 				return false;
 			}
 		}
@@ -215,14 +214,69 @@ public class MakeTable : MonoBehaviour {
 		return false;
 	}
 
-	//シャッフル
+	//答え作成
+	void InitMap(){
+		//int n;
+
+		//力こそパワー
+		string[] tmp = new string[]{
+		//-----------------------------------------------------------------------------------
+			"0", "2", "8", "A",  "1", "F", "4", "9",  "6", "C", "3", "B",  "5", "D", "7", "E",
+			"F", "4", "D", "B",  "3", "E", "8", "0",  "7", "9", "A", "5",  "1", "C", "2", "6",
+			"6", "9", "E", "7",  "2", "5", "A", "C",  "4", "0", "D", "1",  "B", "3", "8", "F",
+			"C", "1", "3", "5",  "D", "B", "6", "7",  "F", "8", "2", "E",  "9", "0", "4", "A",
+		//-----------------------------------------------------------------------------------
+			"5", "8", "A", "0",  "4", "7", "F", "3",  "1", "B", "9", "2",  "6", "E", "D", "C",
+			"7", "E", "4", "6",  "9", "8", "0", "B",  "D", "3", "C", "A",  "F", "2", "5", "1",
+			"1", "3", "2", "F",  "6", "A", "C", "D",  "5", "E", "7", "0",  "8", "4", "B", "9",
+			"B", "D", "C", "9",  "E", "1", "2", "5",  "8", "4", "6", "F",  "A", "7", "0", "3",
+		//-----------------------------------------------------------------------------------
+			"9", "C", "7", "D",  "F", "3", "1", "E",  "B", "5", "0", "6",  "2", "8", "A", "4",
+			"3", "5", "0", "2",  "C", "6", "9", "8",  "A", "D", "1", "4",  "7", "F", "E", "B",
+			"A", "F", "1", "8",  "7", "D", "B", "4",  "C", "2", "E", "9",  "0", "6", "3", "5",
+			"4", "B", "6", "E",  "A", "0", "5", "2",  "3", "7", "F", "8",  "C", "1", "9", "D",
+		//-----------------------------------------------------------------------------------
+			"E", "0", "9", "1",  "B", "C", "3", "A",  "2", "F", "8", "D",  "4", "5", "6", "7",
+			"2", "6", "B", "C",  "8", "4", "7", "1",  "E", "A", "5", "3",  "D", "9", "F", "0",
+			"D", "7", "5", "4",  "0", "2", "E", "F",  "9", "6", "B", "C",  "3", "A", "1", "8",
+			"8", "A", "F", "3",  "5", "9", "D", "6",  "0", "1", "4", "7",  "E", "B", "C", "2"
+		//-----------------------------------------------------------------------------------
+		};
+
+		for (int i = 0; i < Constants.NN; i++) {
+			mapdata.table [i] = new MakingClass ();
+			mapdata.table [i].num = System.String.Copy(tmp [i]);
+		}
+
+		/*
+		for (int i = 0; i < Constants.N; i++){
+			n = i;
+			for (int j = 0; j < Constants.N; j++) {
+				mapdata.table [i * Constants.N + j].num = n.ToString ("X");
+				n = (n + 1) % Constants.N;
+			}
+		}
+
+		swap_tate (1, 4);
+		swap_tate (2, 8);
+		swap_tate (3, 12);
+		swap_tate (6, 9);
+		swap_tate (7, 13);
+		swap_tate (11, 14);
+		*/
+
+		Shuffle(20);
+	}
+
 	public void Shuffle(int num){
 		int l;
 		for (int i = 0; i < num; i++) {
 			l = Random.Range (0, Constants.N) / 4 * 4;
-			swap_tate(l + Random.Range(0, 3), l + Random.Range(0, 3));
+			swap_tate(l + Random.Range(0, 4), l + Random.Range(0, 4));
 			l = Random.Range (0, Constants.N) / 4 * 4;
-			swap_yoko(l + Random.Range(0, 3), l + Random.Range(0, 3));
+			swap_yoko(l + Random.Range(0, 4), l + Random.Range(0, 4));
+			swap_grid_tate (Random.Range (0, Constants.N), Random.Range (0, Constants.N));
+			swap_grid_yoko (Random.Range (0, Constants.N), Random.Range (0, Constants.N));
 		}
 	}
 
@@ -238,9 +292,9 @@ public class MakeTable : MonoBehaviour {
 	private void swap_yoko (int a, int b){
 		string tmp;
 		for (int i = 0; i < Constants.N; i++) {
-			tmp = System.String.Copy(mapdata.table[a * Constants.N + i].num);
-			mapdata.table[a * Constants.N + i].num = System.String.Copy(mapdata.table[b * Constants.N + i].num);
-			mapdata.table[b * Constants.N + i].num = System.String.Copy(tmp);
+			tmp = mapdata.table[i * Constants.N + a].num;
+			mapdata.table[i * Constants.N + a].num = mapdata.table[i * Constants.N + b].num;
+			mapdata.table[i * Constants.N + b].num = tmp;
 		}
 	}
 
