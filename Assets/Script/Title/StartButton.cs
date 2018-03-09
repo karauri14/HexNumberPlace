@@ -23,7 +23,7 @@ public class StartButton : MonoBehaviour {
 		} else if (difficulty.Equals ("NORMAL")) {
 			DifficultySelect.diff = 80;
 		} else if (difficulty.Equals ("HARD")) {
-			DifficultySelect.diff = 124;
+			DifficultySelect.diff = 130;
 		}
 		SceneManager.LoadScene ("Scene/Making");
 	}

@@ -96,6 +96,7 @@ public class MakeTable : MonoBehaviour {
 				//解が複数個でたなら元に戻す
 				if (flag != true) {
 					mapdata.table [n].num = tmp;
+					MakeEmpty (mapdata.table, n);
 					mapdata.table [n].hint = true;
 				} else {
 					count++;
@@ -105,6 +106,11 @@ public class MakeTable : MonoBehaviour {
 			yield return null;
 		}
 
+		for (int i = 0; i < Constants.NN; i++) {
+			if (ans1 [i].Equals (ans2 [i]) != true) {
+				Debug.Log (ans1 [i] + " : " + ans2 [i]);
+			}
+		}
 		SceneManager.LoadScene ("Scene/HexNumberPlace");
 	}
 
@@ -151,10 +157,10 @@ public class MakeTable : MonoBehaviour {
 		BruteForce(sol2, 0, -1);
 		//間違いがあるとfalse
 		for (int i = 0; i < Constants.NN; i++) {
-			if (ans1 [i] != ans2 [i]) {
+			if (ans1 [i].Equals(ans2 [i]) != true) {
 				return false;
 			}
-			if (ans1 [i] == "") {
+			if (System.String.IsNullOrEmpty(ans1 [i]) == true) {
 				return false;
 			}
 		}
@@ -166,12 +172,16 @@ public class MakeTable : MonoBehaviour {
 		int num;
 		int n;
 
+		//一意に決まるところ埋め
+		for (n = pos; n < Constants.NN; n++) {
+			if (board [n].canInput.Count () == 1 && board [n].hint == false) {
+				board [n].num = board [n].canInput.First ().ToString ();
+				board [n].UpdateCanInput (board, n % Constants.N, n / Constants.N);
+			}
+		}
+
 		//空白探し
 		for (n = pos; n < Constants.NN; n++) {
-			if (board [n].canInput.Count() == 1 && board[n].hint == false) {
-				board [n].num = board [n].canInput.First().ToString ();
-				continue;
-			}
 			if (System.String.IsNullOrEmpty (board [n].num)) {
 				pos = n;
 				break;
@@ -182,11 +192,11 @@ public class MakeTable : MonoBehaviour {
 		if (pos == Constants.NN || n == Constants.NN) {
 			if (direction == 1) {
 				for (int i = 0; i < Constants.NN; i++){
-					ans1[i] = board[i].num;
+					ans1[i] = System.String.Copy(board[i].num);
 				}
 			} else {
 				for (int i = 0; i < Constants.NN; i++){
-					ans2[i] = board[i].num;
+					ans2[i] = System.String.Copy(board[i].num);
 				}
 			}
 			return true;
@@ -216,7 +226,6 @@ public class MakeTable : MonoBehaviour {
 
 	//答え作成
 	void InitMap(){
-		//int n;
 
 		//力こそパワー
 		string[] tmp = new string[]{
@@ -249,6 +258,7 @@ public class MakeTable : MonoBehaviour {
 		}
 
 		/*
+		int n;
 		for (int i = 0; i < Constants.N; i++){
 			n = i;
 			for (int j = 0; j < Constants.N; j++) {
@@ -265,7 +275,7 @@ public class MakeTable : MonoBehaviour {
 		swap_tate (11, 14);
 		*/
 
-		Shuffle(20);
+		Shuffle(Constants.SHUFFLE);
 	}
 
 	public void Shuffle(int num){
@@ -292,9 +302,9 @@ public class MakeTable : MonoBehaviour {
 	private void swap_yoko (int a, int b){
 		string tmp;
 		for (int i = 0; i < Constants.N; i++) {
-			tmp = mapdata.table[i * Constants.N + a].num;
-			mapdata.table[i * Constants.N + a].num = mapdata.table[i * Constants.N + b].num;
-			mapdata.table[i * Constants.N + b].num = tmp;
+			tmp = System.String.Copy(mapdata.table[i * Constants.N + a].num);
+			mapdata.table[i * Constants.N + a].num = System.String.Copy(mapdata.table[i * Constants.N + b].num);
+			mapdata.table[i * Constants.N + b].num = System.String.Copy(tmp);
 		}
 	}
 
